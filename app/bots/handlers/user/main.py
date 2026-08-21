@@ -55,11 +55,11 @@ from app.services.user_service import TelegramUserData, UserService
 from app.services.user_wallet_service import UserWalletService
 from app.security.encryption import SecretEncryption
 
-WELCOME_TEXT = """👋 <b>Welcome to CopyEntry Bot!</b>
+WELCOME_TEXT = """👋 <b>Welcome to TrdeSync Bot!</b>
 
 Step into the world of fast, smart, and stress-free trading, designed for both beginners and seasoned traders.
 
-📈 With CopyEntry, you can effortlessly copy top traders, snipe promising tokens the moment they launch, and watch your portfolio grow — all while the bot handles the heavy lifting.
+📈 With TrdeSync, you can effortlessly copy top traders, snipe promising tokens the moment they launch, and watch your portfolio grow — all while the bot handles the heavy lifting.
 🤖 No more manual tracking or missed opportunities; sit back, relax, and let your trading strategy run on autopilot.
 ℹ️ Need guidance? Type /help anytime to access the full bot guide and learn how to use every feature.
 
@@ -69,7 +69,7 @@ Step into the world of fast, smart, and stress-free trading, designed for both b
 
 💡 Tap Continue below to access your wallet and explore all trading options."""
 
-USER_SETTINGS_TEXT = """⚙️ <b>Copy Entries Settings</b>
+USER_SETTINGS_TEXT = """⚙️ <b>Trade Sync Settings</b>
 
 Manage your account, trading preferences, and notification settings below."""
 
@@ -300,9 +300,9 @@ def _copytrade_prompt_text() -> str:
 
 
 def _guide_text() -> str:
-    return """📖 <b>CopyEntry Bot Guide</b>
+    return """📖 <b>TrdeSync Bot Guide</b>
 
-Welcome to CopyEntry Bot, your all-in-one Telegram trading assistant. This guide will walk you through all the core features, how to use them safely, and why some security restrictions are in place.
+Welcome to TrdeSync Bot, your all-in-one Telegram trading assistant. This guide will walk you through all the core features, how to use them safely, and why some security restrictions are in place.
 
 1. <b>Autotrade</b>
 The Autotrade feature allows you to automate your trading strategies. Simply select Autotrade from the main menu, choose your strategy, and let the bot handle the rest.
