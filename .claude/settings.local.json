@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed -n '/github.com-personal/,/^$/p' ~/.ssh/config)",
+      "Bash(ssh -T git@github.com-personal)",
+      "Bash(git remote *)",
+      "Bash(ssh -T git@github.com)"
+    ]
+  }
+}
