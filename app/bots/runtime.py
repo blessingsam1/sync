@@ -79,7 +79,11 @@ async def start_bot_runtime(
                 confirmations=settings.bnb_deposit_confirmations, poa=True,
                 poll_seconds=settings.deposit_poll_seconds,
             ),
-            SolanaWatcher(rpc_url=settings.rpc_url("solana"), service=deposits),
+            SolanaWatcher(
+                rpc_url=settings.rpc_url("solana"),
+                service=deposits,
+                poll_seconds=settings.solana_deposit_poll_seconds,
+            ),
         ]
         tasks += [
             asyncio.create_task(w.run(), name=f"deposit-watcher-{w.chain}") for w in watchers

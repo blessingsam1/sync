@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     deposit_watchers_enabled: bool = False
     eth_deposit_confirmations: int = 12
     bnb_deposit_confirmations: int = 3
+    solana_deposit_poll_seconds: float = 30.0
     deposit_poll_seconds: int = 30
 
     eth_wallet_address: str = ""
