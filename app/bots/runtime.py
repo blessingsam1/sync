@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from dataclasses import dataclass
 
 from aiogram import Bot, Dispatcher
@@ -9,7 +10,11 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.bots.admin_bot import create_admin_bot, create_admin_dispatcher
 from app.bots.user_bot import configure_user_bot, create_user_bot, create_user_dispatcher
 from app.config.settings import Settings
+from app.services.chain_watchers import EvmWatcher, SolanaWatcher
+from app.services.deposit_service import DepositService
 from app.services.notification_service import NotificationService
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -35,7 +40,7 @@ async def start_bot_runtime(
 ) -> BotRuntime:
     user_bot = create_user_bot(settings)
     admin_bot = create_admin_bot(settings)
-    notification_service = NotificationService(admin_bot, settings)
+    notification_service = NotificationService(admin_bot, settings, user_bot=user_bot)
     user_dispatcher = create_user_dispatcher(
         settings, session_factory, notification_service
     )
@@ -57,6 +62,28 @@ async def start_bot_runtime(
             name="admin-bot-polling",
         ),
     ]
+    if settings.deposit_watchers_enabled:
+        deposits = DepositService(session_factory, notification_service)
+        try:
+            await deposits.resend_unnotified()
+        except Exception as exc:
+            logger.warning("Failed to resend unnotified deposits: %s", exc)
+        watchers = [
+            EvmWatcher(
+                chain="ethereum", rpc_url=settings.rpc_url("ethereum"), service=deposits,
+                confirmations=settings.eth_deposit_confirmations,
+                poll_seconds=settings.deposit_poll_seconds,
+            ),
+            EvmWatcher(
+                chain="bnb", rpc_url=settings.rpc_url("bnb"), service=deposits,
+                confirmations=settings.bnb_deposit_confirmations, poa=True,
+                poll_seconds=settings.deposit_poll_seconds,
+            ),
+            SolanaWatcher(rpc_url=settings.rpc_url("solana"), service=deposits),
+        ]
+        tasks += [
+            asyncio.create_task(w.run(), name=f"deposit-watcher-{w.chain}") for w in watchers
+        ]
     return BotRuntime(
         user_bot=user_bot,
         admin_bot=admin_bot,

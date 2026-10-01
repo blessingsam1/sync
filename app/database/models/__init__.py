@@ -5,6 +5,7 @@ from app.database.models.balance import Balance
 from app.database.models.balance_transaction import BalanceTransaction
 from app.database.models.bot_event import BotEvent
 from app.database.models.copytrade_setting import CopytradeSetting
+from app.database.models.deposit import ChainCursor, Deposit
 from app.database.models.trade import Trade
 from app.database.models.transaction import Transaction
 from app.database.models.user import User
@@ -16,7 +17,9 @@ __all__ = [
     "Balance",
     "BalanceTransaction",
     "BotEvent",
+    "ChainCursor",
     "CopytradeSetting",
+    "Deposit",
     "Trade",
     "Transaction",
     "User",

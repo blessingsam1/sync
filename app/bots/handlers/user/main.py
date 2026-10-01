@@ -69,7 +69,7 @@ Step into the world of fast, smart, and stress-free trading, designed for both b
 
 💡 Tap Continue below to access your wallet and explore all trading options."""
 
-USER_SETTINGS_TEXT = """⚙️ <b>Trade Sync Settings</b>
+USER_SETTINGS_TEXT = """⚙️ <b>TradeSync Settings</b>
 
 Manage your account, trading preferences, and notification settings below."""
 

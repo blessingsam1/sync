@@ -3,12 +3,16 @@ services:
     build: .
     env_file:
       - ${ENV_FILE:-.env}
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://testnet_bot:testnet_bot@postgres:5432/testnet_bot
     depends_on:
       postgres:
         condition: service_healthy
     ports:
       - "8000:8000"
     restart: unless-stopped
+    networks:
+      - tradesync-network
 
   postgres:
     image: postgres:16-alpine
@@ -24,6 +28,13 @@ services:
       timeout: 5s
       retries: 10
     restart: unless-stopped
+    networks:
+      - tradesync-network
+
+networks:
+  tradesync-network:
+    driver: bridge
 
 volumes:
   postgres_data:
+

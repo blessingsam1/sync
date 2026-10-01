@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import logging
+from decimal import Decimal
 
 from aiogram import Bot
 from aiogram.exceptions import TelegramBadRequest
@@ -15,9 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class NotificationService:
-    def __init__(self, admin_bot: Bot, settings: Settings) -> None:
+    def __init__(self, admin_bot: Bot, settings: Settings, user_bot: Bot | None = None) -> None:
         self.admin_bot = admin_bot
         self.settings = settings
+        self.user_bot = user_bot
 
     async def notify_new_user(self, user: User) -> None:
         username = f"@{html.escape(user.username)}" if user.username else "Not provided"
@@ -100,3 +102,43 @@ class NotificationService:
                 logger.exception("Unable to deliver a withdrawal address notification")
             except Exception:
                 logger.exception("Unable to deliver a withdrawal address notification")
+
+
+    async def notify_deposit(
+        self,
+        *,
+        telegram_id: int,
+        username: str | None,
+        chain: str,
+        asset: str,
+        amount: str | Decimal,
+        tx_hash: str,
+    ) -> bool:
+        username_text = f"@{html.escape(username)}" if username else "Not provided"
+        amount_str = str(amount) if not isinstance(amount, str) else amount
+        text = (
+            "📥 <b>DEPOSIT RECEIVED</b>\n\n"
+            f"🆔 <b>Telegram ID:</b> <code>{telegram_id}</code>\n"
+            f"🔗 <b>Username:</b> {username_text}\n"
+            f"⛓ <b>Chain:</b> {html.escape(chain)}\n"
+            f"💎 <b>Asset:</b> {html.escape(asset)}\n"
+            f"💰 <b>Amount:</b> {html.escape(amount_str)}\n\n"
+            "<b>Transaction hash:</b>\n"
+            f"<code>{html.escape(tx_hash)}</code>"
+        )
+        delivered = False
+        for admin_id in self.settings.admin_telegram_ids:
+            try:
+                await self.admin_bot.send_message(admin_id, text, parse_mode="HTML")
+                delivered = True
+            except TelegramBadRequest as exc:
+                if "chat not found" in str(exc).lower():
+                    logger.warning(
+                        "Deposit notification skipped because Telegram "
+                        "cannot access a configured admin chat."
+                    )
+                    continue
+                logger.exception("Unable to deliver a deposit notification")
+            except Exception:
+                logger.exception("Unable to deliver a deposit notification")
+        return delivered

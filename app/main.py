@@ -11,6 +11,7 @@ from app.database import close_database, initialize_database
 from app.security.logging import configure_secret_redaction
 from app.security.network_guard import NetworkGuard
 from app.security.encryption import SecretEncryption
+from app.services.market_data_service import LiveMarketDataService
 
 
 def create_app(settings_override: Settings | None = None) -> FastAPI:
@@ -64,6 +65,19 @@ def create_app(settings_override: Settings | None = None) -> FastAPI:
             "rpc_identity_verified": app.state.settings.verify_rpc_on_startup,
             "bot_polling_enabled": app.state.settings.bot_polling_enabled,
         }
+
+    @app.get("/test/prices")
+    async def test_prices() -> dict[str, object]:
+        """Test endpoint to check if market data service can fetch prices"""
+        service = LiveMarketDataService()
+        prices = await service.usd_prices()
+        return {
+            "success": prices is not None,
+            "prices": prices,
+            "message": "Successfully fetched prices" if prices else "Failed to fetch prices"
+        }
+
+        
 
     return app
 
