@@ -125,26 +125,6 @@ def build_wallet_text(
         balance = _format_amount(balances[asset])
         return f"<b>💰 {asset} Balance: {balance} {asset}</b>\n"
     portfolio = sum(usd_values.values(), Decimal("0")) if usd_values is not None else None
-    positions = positions or []
-    position_values = [
-        trade.amount * usd_prices[trade.chain]
-        for trade in positions
-        if usd_prices is not None and trade.chain in usd_prices
-    ]
-    position_total = sum(position_values, Decimal("0"))
-    token_count = len(
-        {
-            trade.asset_out if trade.side == "buy" else trade.asset_in
-            for trade in positions
-        }
-    )
-    position_lines = "".join(
-        f"• {trade.side.title()} <code>{html.escape((trade.asset_out if trade.side == 'buy' else trade.asset_in))}</code>\n"
-        f"  {trade.amount:.8f} {trade.chain}"
-        f"{f' (${trade.amount * usd_prices[trade.chain]:,.2f})' if usd_prices and trade.chain in usd_prices else ''}\n"
-        f"  PNL: {trade.adjustment_percent:+.2f}%\n"
-        for trade in positions
-    )
     return (
         "💼 <b>Wallet Overview — ✅ Connected</b>\n"
         "━━━━━━━━━━━━━━\n"
@@ -158,12 +138,8 @@ def build_wallet_text(
         f"{balance_line('SOL')}"
         f"{balance_line('ETH')}"
         f"{balance_line('BNB')}"
-        f"<b>🌐 Tokens: {token_count}</b>\n"
-        f"<b>📦 Open Positions: {open_position_count if open_position_count is not None else len(positions)}</b>\n"
-        f"{position_lines}"
-        f"<b>📉 Portfolio Value: {f'${portfolio + position_total:,.2f}' if portfolio is not None else 'Unavailable'}</b>\n"
+        f"<b>📉 Portfolio Value: {f'${portfolio:,.2f}' if portfolio is not None else 'Unavailable'}</b>\n"
         "━━━━━━━━━━━━━━\n"
-        + ("<i>⚠️ No active tokens in your wallet.\n🟢 Try /buy to place your first trade.</i>" if not positions else "")
     )
 
 
