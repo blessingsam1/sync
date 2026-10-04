@@ -142,6 +142,7 @@ def build_wallet_text(
         f"<b>📦 Open Positions: {open_position_count if open_position_count is not None else len(positions)}</b>\n"
         f"<b>📉 Portfolio Value: {f'${portfolio:,.2f}' if portfolio is not None else 'Unavailable'}</b>\n"
         "━━━━━━━━━━━━━━\n"
+        + ("<i>⚠️ No active tokens in your wallet.\n🟢 Try /buy to place your first trade.</i>" if not positions else "")
     )
 
 
