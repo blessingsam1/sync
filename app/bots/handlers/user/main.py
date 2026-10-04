@@ -125,6 +125,7 @@ def build_wallet_text(
         balance = _format_amount(balances[asset])
         return f"<b>💰 {asset} Balance: {balance} {asset}</b>\n"
     portfolio = sum(usd_values.values(), Decimal("0")) if usd_values is not None else None
+    positions = positions or []
     return (
         "💼 <b>Wallet Overview — ✅ Connected</b>\n"
         "━━━━━━━━━━━━━━\n"
@@ -138,6 +139,7 @@ def build_wallet_text(
         f"{balance_line('SOL')}"
         f"{balance_line('ETH')}"
         f"{balance_line('BNB')}"
+        f"<b>📦 Open Positions: {open_position_count if open_position_count is not None else len(positions)}</b>\n"
         f"<b>📉 Portfolio Value: {f'${portfolio:,.2f}' if portfolio is not None else 'Unavailable'}</b>\n"
         "━━━━━━━━━━━━━━\n"
     )
