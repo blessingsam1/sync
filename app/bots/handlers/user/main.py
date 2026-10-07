@@ -122,8 +122,8 @@ def build_wallet_text(
         else None
     )
     def balance_line(asset: str) -> str:
-        balance = balances[asset]
-        return f"<b>💰 {asset} Balance:</b> {balance:.2f} {asset}\n"
+        balance = _format_amount(balances[asset])
+        return f"<b>💰 {asset} Balance: {balance} {asset}</b>\n"
     portfolio = sum(usd_values.values(), Decimal("0")) if usd_values is not None else None
     positions = positions or []
     return (
